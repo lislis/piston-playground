@@ -22,7 +22,7 @@ fn main() {
         &TextureSettings::new()
     ).unwrap();
 
-    let ref font = assets.join("Jomhuria-Regular.ttf");
+    let ref font = assets.join("Amatic-Bold.ttf");
     let factory = window.factory.clone();
     let mut glyphs = Glyphs::new(font, factory).unwrap();
 
@@ -35,7 +35,7 @@ fn main() {
 
             clear([1.0; 4], g);
             image(&house, c.transform.trans(50.0, 0.0), g);
-            text::Text::new_color([1.0, 0.0, 0.0, 1.0], 32).draw(
+            text::Text::new_color([0.3, 0.5, 0.5, 1.0], 42).draw(
                 "POINTS",
                 &mut glyphs,
                 &c.draw_state,
