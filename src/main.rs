@@ -45,6 +45,11 @@ fn main() {
 
     let color = [0.3, 0.5, 0.5, 1.0];
 
+    let mut move_y = 30.0;
+    let mut move_x = 50.0;
+    let score = "Points: ";
+    let step = 70.0;
+
 //    let mut game = Game::new();
 
     window.set_lazy(true);
@@ -52,10 +57,29 @@ fn main() {
     // iterate over window events
     while let Some(e) = window.next() {
 
+        if let Some(upd) = e.render_args() {
+            // println!("Rendering frame {:?}", upd);
+        }
+
         if let Some(button) = e.press_args() {
-            if button == Button::Keyboard(Key::W) {
-                println!("Pressed {:?}", button);
+            println!("Pressed {:?}", button);
+            match button {
+                Button::Keyboard(Key::W) => {
+                    move_y -= step;
+                }
+                Button::Keyboard(Key::S) => {
+                    move_y += step;
+                }
+                Button::Keyboard(Key::A) => {
+                    move_x -= step;
+                }
+                Button::Keyboard(Key::D) => {
+                    move_x += step;
+                }
+                _ => {}
+
             }
+            println!("X {:?} and Y {:?}", move_x, move_y);
         }
 
         window.draw_2d(&e, |c, g| {
@@ -64,15 +88,15 @@ fn main() {
             clear([1.0; 4], g);
             image(&house, c.transform.trans(50.0, 0.0), g);
             text::Text::new_color(color, 42).draw(
-                "POINTS",
+                score,
                 &mut glyphs,
                 &c.draw_state,
                 font_transform,
                 g
             );
 
-            let square = rectangle::square(0.0, 0.0, 30.0);
-            rectangle(color, square, c.transform.trans(200.0, 300.0), g);
+            let square = rectangle::square(0.0, 0.0, 50.0);
+            rectangle(color, square, c.transform.trans(move_x, move_y), g);
         });
 
     }
