@@ -20,6 +20,7 @@ impl Game {
 }
 */
 
+
 fn main() {
     let opengl = OpenGL::V3_2;
     let mut window: PistonWindow =
@@ -50,6 +51,21 @@ fn main() {
     let score = "Points: ";
     let step = 70.0;
 
+    let mut up_d = false;
+    let mut down_d = false;
+    let mut right_d = false;
+    let mut left_d = false;
+
+    let drawfactor = 90.0;
+
+    let mut playfield = [
+        [0.0, 0.0, 0.0],
+        [0.0, 1.0, 0.0],
+        [0.0, 0.0, 0.0],
+        [0.0, 0.0, 0.0]];
+
+
+
 //    let mut game = Game::new();
 
     window.set_lazy(true);
@@ -58,28 +74,70 @@ fn main() {
     while let Some(e) = window.next() {
 
         if let Some(upd) = e.render_args() {
-            // println!("Rendering frame {:?}", upd);
+
+            // @todo change x and y names, it's confusing
+            /*for (xi, xv) in &playfield.enumerate() {
+                for (yi,  yv) in xv.iter().enumerate() {
+
+                    if yv == &1.0 {
+                        println!("x {:?} y {:?} value {:?}", yi, xi, yv);
+                        if up_d {
+                            playfield[yi][xi] = 0.0;
+                            playfield[yi - 1][xi] = 1.0; // @todo refactor to use a funciton to return next elem
+                        }
+                        if down_d {
+                            playfield[yi][xi] = 0.0;
+                            playfield[yi + 1][xi] = 1.0; // @todo refactor to use a funciton to return next elem
+                        }
+                        if right_d {
+                            playfield[yi][xi] = 0.0;
+                            playfield[yi][xi + 1] = 1.0; // @todo refactor to use a funciton to return next elem
+                        }
+                        if left_d {
+                            playfield[yi][xi] = 0.0;
+                            playfield[yi][xi -1] = 1.0; // @todo refactor to use a funciton to return next elem
+                        }
+                    }
+                }
+            }*/
         }
 
         if let Some(button) = e.press_args() {
             println!("Pressed {:?}", button);
             match button {
                 Button::Keyboard(Key::W) => {
-                    move_y -= step;
+                    up_d = true;
                 }
                 Button::Keyboard(Key::S) => {
-                    move_y += step;
+                    down_d = true;
                 }
                 Button::Keyboard(Key::A) => {
-                    move_x -= step;
+                    left_d = true;
                 }
                 Button::Keyboard(Key::D) => {
-                    move_x += step;
+                    right_d = true;
                 }
                 _ => {}
-
             }
-            println!("X {:?} and Y {:?}", move_x, move_y);
+        }
+
+        if let Some(button) = e.release_args() {
+            println!("Released {:?}", button);
+            match button {
+                Button::Keyboard(Key::W) => {
+                    up_d = false;
+                }
+                Button::Keyboard(Key::S) => {
+                    down_d = false;
+                }
+                Button::Keyboard(Key::A) => {
+                    left_d = false;
+                }
+                Button::Keyboard(Key::D) => {
+                    right_d = false;
+                }
+                _ => {}
+            }
         }
 
         window.draw_2d(&e, |c, g| {
@@ -95,8 +153,18 @@ fn main() {
                 g
             );
 
-            let square = rectangle::square(0.0, 0.0, 50.0);
-            rectangle(color, square, c.transform.trans(move_x, move_y), g);
+            for (xi, xv) in playfield.iter().enumerate() {
+                for (yi,  yv) in xv.iter().enumerate() {
+                    println!("x {:?} y {:?} value {:?}", yi, xi, yv);
+                    if yv == &1.0 {
+                        let square = rectangle::square(0.0, 0.0, 50.0);
+                        rectangle(color, square, c.transform.trans(
+                            (drawfactor + (drawfactor * yi as f64)),
+                            (drawfactor + (drawfactor * xi as f64))), g);
+                    }
+                }
+            }
+
         });
 
     }
