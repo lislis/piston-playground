@@ -26,21 +26,37 @@ fn main() {
         &TextureSettings::new()
     ).unwrap();
 
+    let apple = assets.join("apple.png");
+    let apple = Texture::from_path(
+        &mut window.factory,
+        &apple,
+        Flip::None,
+        &TextureSettings::new()
+    ).unwrap();
+
+    let apple_gone = assets.join("apple-gone.png");
+    let apple_gone = Texture::from_path(
+        &mut window.factory,
+        &apple_gone,
+        Flip::None,
+        &TextureSettings::new()
+    ).unwrap();
+
     let ref font = assets.join("Amatic-Bold.ttf");
     let factory = window.factory.clone();
     let mut glyphs = Glyphs::new(font, factory).unwrap();
 
     let color = [0.3, 0.5, 0.5, 1.0];
 
-    let mut move_y = 30.0;
-    let mut move_x = 50.0;
     let score = "Points: ";
-    let step = 70.0;
 
     let mut up_d = false;
     let mut down_d = false;
     let mut right_d = false;
     let mut left_d = false;
+
+    let apples_total: i32 = 10;
+    let mut apples_left: i32 = 10;
 
     let drawfactor = 90.0;
 
@@ -106,7 +122,7 @@ fn main() {
         }
 
         if let Some(button) = e.release_args() {
-            println!("Released {:?}", button);
+            // println!("Released {:?}", button);
             match button {
                 Button::Keyboard(Key::W) => {
                     up_d = false;
@@ -137,9 +153,17 @@ fn main() {
                 g
             );
 
+            for (i, v) in (0..apples_total).enumerate() {
+                if i as i32 >= apples_left {
+                    image(&apple_gone, c.transform.scale(0.5, 0.5).trans((0.0 + (i * 50) as f64), 0.0), g);
+                } else {
+                    image(&apple, c.transform.scale(0.5, 0.5).trans((0.0 + (i * 50) as f64), 0.0), g);
+                }
+            }
+
             for (xi, xv) in playfield.iter().enumerate() {
                 for (yi,  yv) in xv.iter().enumerate() {
-                    println!("x {:?} y {:?} value {:?}", yi, xi, yv);
+                    // println!("x {:?} y {:?} value {:?}", yi, xi, yv);
                     if yv == &1.0 {
                         let square = rectangle::square(0.0, 0.0, 50.0);
                         rectangle(color, square, c.transform.trans(
