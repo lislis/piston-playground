@@ -3,22 +3,8 @@ extern crate find_folder;
 
 use piston_window::*;
 
-/*
-struct Game {
-    x: f64,
-    y: f64
-}
-
-impl Game {
-    fn new() -> Game {
-        Game { x: 0.0, y: 0.0 }
-    }
-    fn on_update(&mut self, upd: UpdateArgs) {
-        self.x += 5.0 * upd.dt;
-        self.y += 5.0 * upd.dt;
-    }
-}
-*/
+// get_current_pos(playfield) -> coord
+// update_d(d, coord, playfield) -> playfield
 
 
 fn main() {
@@ -64,12 +50,8 @@ fn main() {
         [0.0, 0.0, 0.0],
         [0.0, 0.0, 0.0]];
 
+    window.set_lazy(true); // ??
 
-
-//    let mut game = Game::new();
-
-    window.set_lazy(true);
-    // game loop
     // iterate over window events
     while let Some(e) = window.next() {
 
@@ -79,27 +61,29 @@ fn main() {
             /*for (xi, xv) in &playfield.enumerate() {
                 for (yi,  yv) in xv.iter().enumerate() {
 
-                    if yv == &1.0 {
-                        println!("x {:?} y {:?} value {:?}", yi, xi, yv);
-                        if up_d {
-                            playfield[yi][xi] = 0.0;
-                            playfield[yi - 1][xi] = 1.0; // @todo refactor to use a funciton to return next elem
-                        }
-                        if down_d {
-                            playfield[yi][xi] = 0.0;
-                            playfield[yi + 1][xi] = 1.0; // @todo refactor to use a funciton to return next elem
-                        }
-                        if right_d {
-                            playfield[yi][xi] = 0.0;
-                            playfield[yi][xi + 1] = 1.0; // @todo refactor to use a funciton to return next elem
-                        }
-                        if left_d {
-                            playfield[yi][xi] = 0.0;
-                            playfield[yi][xi -1] = 1.0; // @todo refactor to use a funciton to return next elem
-                        }
+                    // ideally we'd call update_d in every branch
+                    // instead of assigning playfield here
+
+                    println!("x {:?} y {:?} value {:?}", yi, xi, yv);
+                    if up_d {
+                        playfield[yi][xi] = 0.0;
+                        playfield[yi - 1][xi] = 1.0; // @todo refactor to use a funciton to return next elem
+                    }
+                    if down_d {
+                        playfield[yi][xi] = 0.0;
+                        playfield[yi + 1][xi] = 1.0;
+                    }
+                    if right_d {
+                        playfield[yi][xi] = 0.0;
+                        playfield[yi][xi + 1] = 1.0;
+                    }
+                    if left_d {
+                        playfield[yi][xi] = 0.0;
+                        playfield[yi][xi -1] = 1.0;
                     }
                 }
-            }*/
+            }
+        }*/
         }
 
         if let Some(button) = e.press_args() {
