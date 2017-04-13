@@ -1,11 +1,13 @@
 extern crate piston_window;
 extern crate find_folder;
 
+mod apples;
+use apples::Apples;
+
 use piston_window::*;
 
 // get_current_pos(playfield) -> coord
 // update_d(d, coord, playfield) -> playfield
-
 
 fn main() {
     let opengl = OpenGL::V3_2;
@@ -42,6 +44,8 @@ fn main() {
         &TextureSettings::new()
     ).unwrap();
 
+    let mut apples = Apples::new();
+
     let ref font = assets.join("Amatic-Bold.ttf");
     let factory = window.factory.clone();
     let mut glyphs = Glyphs::new(font, factory).unwrap();
@@ -55,16 +59,13 @@ fn main() {
     let mut right_d = false;
     let mut left_d = false;
 
-    let apples_total: i32 = 10;
-    let mut apples_left: i32 = 10;
-
     let drawfactor = 90.0;
 
-    let mut playfield = [
-        [0.0, 0.0, 0.0],
-        [0.0, 1.0, 0.0],
-        [0.0, 0.0, 0.0],
-        [0.0, 0.0, 0.0]];
+    let mut playfield = vec![
+        vec![0.0, 0.0, 0.0],
+        vec![0.0, 1.0, 0.0],
+        vec![0.0, 0.0, 0.0],
+        vec![0.0, 0.0, 0.0]];
 
     window.set_lazy(true); // ??
 
@@ -73,8 +74,13 @@ fn main() {
 
         if let Some(upd) = e.render_args() {
 
+            if up_d {
+                apples.is_gone(1);
+            }
+
+            /*
             // @todo change x and y names, it's confusing
-            /*for (xi, xv) in &playfield.enumerate() {
+            for (xi, xv) in  playfield.iter().enumerate() {
                 for (yi,  yv) in xv.iter().enumerate() {
 
                     // ideally we'd call update_d in every branch
@@ -82,24 +88,23 @@ fn main() {
 
                     println!("x {:?} y {:?} value {:?}", yi, xi, yv);
                     if up_d {
-                        playfield[yi][xi] = 0.0;
-                        playfield[yi - 1][xi] = 1.0; // @todo refactor to use a funciton to return next elem
+                        playfield[yi as usize][xi as usize] = 0.0;
+                        playfield[yi as usize -1][xi as usize] = 1.0; // @todo refactor to use a funciton to return next elem
                     }
                     if down_d {
-                        playfield[yi][xi] = 0.0;
-                        playfield[yi + 1][xi] = 1.0;
+                        playfield[yi as usize][xi as usize] = 0.0;
+                        playfield[yi + 1][xi as usize] = 1.0;
                     }
                     if right_d {
-                        playfield[yi][xi] = 0.0;
-                        playfield[yi][xi + 1] = 1.0;
+                        playfield[yi as usize][xi as usize] = 0.0;
+                        playfield[yi as usize][xi + 1] = 1.0;
                     }
                     if left_d {
-                        playfield[yi][xi] = 0.0;
-                        playfield[yi][xi -1] = 1.0;
+                        playfield[yi as usize][xi as usize] = 0.0;
+                        playfield[yi as usize][xi -1] = 1.0;
                     }
                 }
-            }
-        }*/
+            }*/
         }
 
         if let Some(button) = e.press_args() {
@@ -126,15 +131,19 @@ fn main() {
             match button {
                 Button::Keyboard(Key::W) => {
                     up_d = false;
+                    //update_d("up");
                 }
                 Button::Keyboard(Key::S) => {
                     down_d = false;
+                    //update_d("down");
                 }
                 Button::Keyboard(Key::A) => {
                     left_d = false;
+                    //update_d("left");
                 }
                 Button::Keyboard(Key::D) => {
                     right_d = false;
+                    //update_d("right");
                 }
                 _ => {}
             }
@@ -153,8 +162,8 @@ fn main() {
                 g
             );
 
-            for (i, v) in (0..apples_total).enumerate() {
-                if i as i32 >= apples_left {
+            for (i, v) in (0..apples.total).enumerate() {
+                if i as i32 >= apples.left {
                     image(&apple_gone, c.transform.scale(0.5, 0.5).trans((0.0 + (i * 50) as f64), 0.0), g);
                 } else {
                     image(&apple, c.transform.scale(0.5, 0.5).trans((0.0 + (i * 50) as f64), 0.0), g);
@@ -162,12 +171,12 @@ fn main() {
             }
 
             for (xi, xv) in playfield.iter().enumerate() {
-                for (yi,  yv) in xv.iter().enumerate() {
+                for yi in xv {
                     // println!("x {:?} y {:?} value {:?}", yi, xi, yv);
-                    if yv == &1.0 {
+                    if yi == &1.0 {
                         let square = rectangle::square(0.0, 0.0, 50.0);
                         rectangle(color, square, c.transform.trans(
-                            (drawfactor + (drawfactor * yi as f64)),
+                            (drawfactor + (drawfactor * yi as &f64)),
                             (drawfactor + (drawfactor * xi as f64))), g);
                     }
                 }
