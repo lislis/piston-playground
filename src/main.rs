@@ -18,6 +18,8 @@ fn main() {
         .build()
         .unwrap();
 
+    let mut apples = Apples::new();
+
     let assets = find_folder::Search::ParentsThenKids(3,3)
         .for_folder("assets").unwrap();
     let house = assets.join("house.jpg");
@@ -28,23 +30,19 @@ fn main() {
         &TextureSettings::new()
     ).unwrap();
 
-    let apple = assets.join("apple.png");
     let apple = Texture::from_path(
         &mut window.factory,
-        &apple,
+        &assets.join(apples.full),
         Flip::None,
         &TextureSettings::new()
     ).unwrap();
 
-    let apple_gone = assets.join("apple-gone.png");
     let apple_gone = Texture::from_path(
         &mut window.factory,
-        &apple_gone,
+        &(assets.join(apples.empty)),
         Flip::None,
         &TextureSettings::new()
     ).unwrap();
-
-    let mut apples = Apples::new();
 
     let ref font = assets.join("Amatic-Bold.ttf");
     let factory = window.factory.clone();
