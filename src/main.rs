@@ -4,10 +4,10 @@ extern crate find_folder;
 mod apples;
 use apples::Apples;
 
-use piston_window::*;
+mod player;
+use player::Player;
 
-// get_current_pos(playfield) -> coord
-// update_d(d, coord, playfield) -> playfield
+use piston_window::*;
 
 fn main() {
     let opengl = OpenGL::V3_2;
@@ -19,6 +19,7 @@ fn main() {
         .unwrap();
 
     let mut apples = Apples::new();
+    let mut player = Player::new();
 
     let assets = find_folder::Search::ParentsThenKids(3,3)
         .for_folder("assets").unwrap();
@@ -52,18 +53,7 @@ fn main() {
 
     let score = "Points: ";
 
-    let mut up_d = false;
-    let mut down_d = false;
-    let mut right_d = false;
-    let mut left_d = false;
-
     let drawfactor = 90.0;
-
-    let mut playfield = vec![
-        vec![0.0, 0.0, 0.0],
-        vec![0.0, 1.0, 0.0],
-        vec![0.0, 0.0, 0.0],
-        vec![0.0, 0.0, 0.0]];
 
     window.set_lazy(true); // ??
 
@@ -72,76 +62,22 @@ fn main() {
 
         if let Some(upd) = e.render_args() {
 
-            if up_d {
-                apples.is_gone(1);
-            }
-
-            /*
-            // @todo change x and y names, it's confusing
-            for (xi, xv) in  playfield.iter().enumerate() {
-                for (yi,  yv) in xv.iter().enumerate() {
-
-                    // ideally we'd call update_d in every branch
-                    // instead of assigning playfield here
-
-                    println!("x {:?} y {:?} value {:?}", yi, xi, yv);
-                    if up_d {
-                        playfield[yi as usize][xi as usize] = 0.0;
-                        playfield[yi as usize -1][xi as usize] = 1.0; // @todo refactor to use a funciton to return next elem
-                    }
-                    if down_d {
-                        playfield[yi as usize][xi as usize] = 0.0;
-                        playfield[yi + 1][xi as usize] = 1.0;
-                    }
-                    if right_d {
-                        playfield[yi as usize][xi as usize] = 0.0;
-                        playfield[yi as usize][xi + 1] = 1.0;
-                    }
-                    if left_d {
-                        playfield[yi as usize][xi as usize] = 0.0;
-                        playfield[yi as usize][xi -1] = 1.0;
-                    }
-                }
-            }*/
-        }
-
-        if let Some(button) = e.press_args() {
-            println!("Pressed {:?}", button);
-            match button {
-                Button::Keyboard(Key::W) => {
-                    up_d = true;
-                }
-                Button::Keyboard(Key::S) => {
-                    down_d = true;
-                }
-                Button::Keyboard(Key::A) => {
-                    left_d = true;
-                }
-                Button::Keyboard(Key::D) => {
-                    right_d = true;
-                }
-                _ => {}
-            }
         }
 
         if let Some(button) = e.release_args() {
             // println!("Released {:?}", button);
             match button {
                 Button::Keyboard(Key::W) => {
-                    up_d = false;
-                    //update_d("up");
+                    player.moving(0, -1)
                 }
                 Button::Keyboard(Key::S) => {
-                    down_d = false;
-                    //update_d("down");
+                    player.moving(0, 1);
                 }
                 Button::Keyboard(Key::A) => {
-                    left_d = false;
-                    //update_d("left");
+                    player.moving(-1,0);
                 }
                 Button::Keyboard(Key::D) => {
-                    right_d = false;
-                    //update_d("right");
+                    player.moving(1, 0);
                 }
                 _ => {}
             }
@@ -168,18 +104,16 @@ fn main() {
                 }
             }
 
-            for (xi, xv) in playfield.iter().enumerate() {
-                for yi in xv {
-                    // println!("x {:?} y {:?} value {:?}", yi, xi, yv);
-                    if yi == &1.0 {
+            for (ci, cv) in (0..player.rows).enumerate() {
+                for (ri, rv) in (0..player.columns).enumerate() {
+                    if rv == player.x && cv == player.y {
                         let square = rectangle::square(0.0, 0.0, 50.0);
                         rectangle(color, square, c.transform.trans(
-                            (drawfactor + (drawfactor * yi as &f64)),
-                            (drawfactor + (drawfactor * xi as f64))), g);
+                            (drawfactor + (drawfactor * rv as  f64)),
+                            (drawfactor + (drawfactor * cv as f64))), g);
                     }
                 }
             }
-
         });
 
     }
