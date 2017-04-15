@@ -1,8 +1,11 @@
+use apples::Apples;
+
 pub struct Player {
     pub rows: i32,
     pub columns: i32,
     pub x: i32,
-    pub y: i32
+    pub y: i32,
+    pub apples: Apples
 }
 
 impl Player {
@@ -11,7 +14,8 @@ impl Player {
             rows: 4,
             columns: 3,
             x: 0,
-            y: 0
+            y: 0,
+            apples: Apples::new()
         }
     }
     pub fn moving(&mut self, x: i32, y: i32) {

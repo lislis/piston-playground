@@ -2,7 +2,6 @@ extern crate piston_window;
 extern crate find_folder;
 
 mod apples;
-use apples::Apples;
 
 mod player;
 use player::Player;
@@ -48,7 +47,6 @@ fn main() {
         .build()
         .unwrap();
 
-    let mut apples = Apples::new();
     let mut player = Player::new();
 
     let COLOR = [0.3, 0.5, 0.5, 1.0];
@@ -65,14 +63,14 @@ fn main() {
 
     let apple = Texture::from_path(
         &mut window.factory,
-        &assets.join(apples.full),
+        &assets.join(player.apples.full),
         Flip::None,
         &TextureSettings::new()
     ).unwrap();
 
     let apple_gone = Texture::from_path(
         &mut window.factory,
-        &(assets.join(apples.empty)),
+        &(assets.join(player.apples.empty)),
         Flip::None,
         &TextureSettings::new()
     ).unwrap();
@@ -116,6 +114,7 @@ fn main() {
                     let x = calc_dis_pos(player.x as f64, drawfactor);
                     let y = calc_dis_pos(player.y as f64, drawfactor);
                     throwable.set_active(x, y);
+                    player.apples.is_gone(1);
                 }
                 _ => {}
             }
@@ -134,8 +133,8 @@ fn main() {
                 g
             );
 
-            for (i, v) in (0..apples.total).enumerate() {
-                if i as i32 >= apples.left {
+            for (i, v) in (0..player.apples.total).enumerate() {
+                if i as i32 >= player.apples.left {
                     image(&apple_gone, c.transform.scale(0.5, 0.5).trans((0.0 + (i * 50) as f64), 0.0), g);
                 } else {
                     image(&apple, c.transform.scale(0.5, 0.5).trans((0.0 + (i * 50) as f64), 0.0), g);
