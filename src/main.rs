@@ -1,4 +1,5 @@
 extern crate piston_window;
+extern crate piston;
 extern crate find_folder;
 
 mod apples;
@@ -90,77 +91,84 @@ fn main() {
     // iterate over window events
     while let Some(e) = window.next() {
 
-        if let Some(upd) = e.render_args() {
-            // println!("{:?}", upd);
-            // throwable.update(upd.ext_dt);
-        }
+        match e {
+            Input::Release(Button::Keyboard(key)) => {
+                match key {
+                    Key::W => {
+                        player.moving(0, -1)
+                    }
+                    Key::S => {
+                        player.moving(0, 1);
+                    }
+                    Key::A => {
+                        player.moving(-1,0);
+                    }
+                    Key::D => {
+                        player.moving(1, 0);
+                    }
+                    Key::K => {
+                        let x = calc_dis_pos(player.x as f64, drawfactor);
+                        let y = calc_dis_pos(player.y as f64, drawfactor);
+                        throwable.set_active(x, y);
+                        player.apples.is_gone(1);
+                    }
+                    _ => {}
+                }
 
-        if let Some(button) = e.release_args() {
-            // println!("Released {:?}", button);
-            match button {
-                Button::Keyboard(Key::W) => {
-                    player.moving(0, -1)
-                }
-                Button::Keyboard(Key::S) => {
-                    player.moving(0, 1);
-                }
-                Button::Keyboard(Key::A) => {
-                    player.moving(-1,0);
-                }
-                Button::Keyboard(Key::D) => {
-                    player.moving(1, 0);
-                }
-                Button::Keyboard(Key::K) => {
-                    let x = calc_dis_pos(player.x as f64, drawfactor);
-                    let y = calc_dis_pos(player.y as f64, drawfactor);
-                    throwable.set_active(x, y);
-                    player.apples.is_gone(1);
-                }
-                _ => {}
             }
-        }
-
-        window.draw_2d(&e, |c, g| {
-            let font_transform = c.transform.trans(10.0, 100.0);
-
-            clear([1.0; 4], g);
-            image(&house, c.transform.trans(50.0, 0.0), g);
-            text::Text::new_color(COLOR, 42).draw(
-                score,
-                &mut glyphs,
-                &c.draw_state,
-                font_transform,
-                g
-            );
-
-            for (i, v) in (0..player.apples.total).enumerate() {
-                if i as i32 >= player.apples.left {
-                    image(&apple_gone, c.transform.scale(0.5, 0.5).trans((0.0 + (i * 50) as f64), 0.0), g);
-                } else {
-                    image(&apple, c.transform.scale(0.5, 0.5).trans((0.0 + (i * 50) as f64), 0.0), g);
-                }
+            Input::Update(args) => {
+                // update time
+                // check collision
+                //time_controller.update_seconds(args.dt, input_controller.actions(), &mut state);
             }
+            Input::Render(_) => {
+                window.draw_2d(&e, |c, g| {
+                    let font_transform = c.transform.trans(10.0, 100.0);
 
-            for (ci, cv) in (0..player.rows).enumerate() {
-                for (ri, rv) in (0..player.columns).enumerate() {
-                    if rv == player.x && cv == player.y {
-                        let square = rectangle::square(0.0, 0.0, 50.0);
-                        rectangle(COLOR, square, c.transform.trans(
-                            calc_dis_pos(rv as f64, drawfactor),
-                            calc_dis_pos(cv as f64, drawfactor)), g);
-                        image(&apple, c.transform.trans(
-                            calc_dis_pos(rv as f64, drawfactor),
-                            calc_dis_pos(cv as f64, drawfactor)).scale(0.9, 0.9), g);
+                    clear([1.0; 4], g);
+                    image(&house, c.transform.trans(50.0, 0.0), g);
+                    text::Text::new_color(COLOR, 42).draw(
+                        score,
+                        &mut glyphs,
+                        &c.draw_state,
+                        font_transform,
+                        g
+                    );
+
+                    for (i, v) in (0..player.apples.total).enumerate() {
+                        if i as i32 >= player.apples.left {
+                            image(&apple_gone, c.transform.scale(0.5, 0.5).trans((0.0 + (i * 50) as f64), 0.0), g);
+                        } else {
+                            image(&apple, c.transform.scale(0.5, 0.5).trans((0.0 + (i * 50) as f64), 0.0), g);
+                        }
                     }
 
-                }
-            }
+                    for (ci, cv) in (0..player.rows).enumerate() {
+                        for (ri, rv) in (0..player.columns).enumerate() {
+                            if rv == player.x && cv == player.y {
+                                let square = rectangle::square(0.0, 0.0, 50.0);
+                                rectangle(COLOR, square, c.transform.trans(
+                                    calc_dis_pos(rv as f64, drawfactor),
+                                    calc_dis_pos(cv as f64, drawfactor)), g);
+                                image(&apple, c.transform.trans(
+                                    calc_dis_pos(rv as f64, drawfactor),
+                                    calc_dis_pos(cv as f64, drawfactor)).scale(0.9, 0.9), g);
+                            }
 
-            if throwable.active {
-                image(&apple, c.transform.trans(
-                    throwable.x, throwable.y), g);
+                        }
+                    }
+
+                    if throwable.active {
+                        image(&apple, c.transform.trans(
+                            throwable.x, throwable.y), g);
+                    }
+                });
+
             }
-        });
+            _ => {}
+        }
+
+
 
     }
 }
