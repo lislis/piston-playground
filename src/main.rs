@@ -3,37 +3,12 @@ extern crate piston;
 extern crate find_folder;
 
 mod apples;
+mod throwable;
 
 mod player;
 use player::Player;
 
 use piston_window::*;
-
-struct Throwable {
-    pub active: bool,
-    pub x: f64,
-    pub y: f64,
-}
-
-impl Throwable {
-    pub fn new() -> Throwable {
-        Throwable {
-            active: false,
-            x: 0.0,
-            y: 0.0
-        }
-    }
-    pub fn set_active(&mut self, x: f64, y: f64) {
-        self.active = true;
-        self.x = x;
-        self.y = y;
-    }
-    pub fn update(&mut self, delta_time: f64) {
-        if self.active {
-            self.x += delta_time;
-        }
-    }
-}
 
 fn calc_dis_pos(pos: f64, factor: f64) -> f64 {
     factor + (pos * factor)
@@ -82,8 +57,6 @@ fn main() {
 
     let score = "Points: ";
 
-    let mut throwable = Throwable::new();
-
     let drawfactor = 90.0;
 
     window.set_lazy(true); // ??
@@ -109,7 +82,8 @@ fn main() {
                     Key::K => {
                         let x = calc_dis_pos(player.x as f64, drawfactor);
                         let y = calc_dis_pos(player.y as f64, drawfactor);
-                        throwable.set_active(x, y);
+                        //throwable.set_active(x, y);
+                        player.throw(x, y);
                         player.apples.is_gone(1);
                     }
                     _ => {}
@@ -158,9 +132,9 @@ fn main() {
                         }
                     }
 
-                    if throwable.active {
+                    for t in player.throwable.iter() {
                         image(&apple, c.transform.trans(
-                            throwable.x, throwable.y), g);
+                            t.x, t.y), g);
                     }
                 });
 
