@@ -12,14 +12,14 @@ impl Throwable {
             y: y_pos
         }
     }
-    pub fn set_active(&mut self, x: f64, y: f64) {
+    /*pub fn set_active(&mut self, x: f64, y: f64) {
         self.active = true;
         self.x = x;
         self.y = y;
-    }
-    pub fn update(&mut self, delta_time: f64) {
+    }*/
+    pub fn update(&mut self) {
         if self.active {
-            self.y += delta_time;
+            self.y += 1.0;
         }
     }
 }

@@ -15,9 +15,9 @@ impl Apples {
             full: "apple.png",
             empty: "apple-gone.png"}
     }
-    pub fn is_gone(&mut self, i: i32) {
-        self.gone += i;
-        self.left -= i;
+    pub fn remove_one(&mut self) {
+        self.gone += 1;
+        self.left -= 1;
     }
 
 }

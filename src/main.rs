@@ -4,11 +4,56 @@ extern crate find_folder;
 
 mod apples;
 mod throwable;
-
 mod player;
-use player::Player;
 
+use player::Player;
 use piston_window::*;
+
+struct Game {
+    pub folks: Vec<Folk>
+}
+
+impl Game {
+    pub fn new() -> Game {
+        Game {
+            folks: vec![]
+        }
+    }
+    pub fn new_folk (&mut self) {
+        self.folks.push(Folk::new());
+    }
+
+}
+
+
+struct Folk {
+    pub x: f64,
+    pub y: f64,
+    moving: bool,
+    ltr: bool,
+    speed: f64
+}
+
+impl Folk {
+    pub fn new() -> Folk {
+        Folk {
+            x: 0.0,
+            y: 500.0,
+            moving: true,
+            ltr: true,
+            speed: 1.0
+        }
+    }
+    pub fn update(&mut self) {
+        if self.moving {
+            if self.ltr {
+                self.x += 1.0;
+            } else {
+                self.x -= 1.0;
+            }
+        }
+    }
+}
 
 fn calc_dis_pos(pos: f64, factor: f64) -> f64 {
     factor + (pos * factor)
@@ -59,6 +104,9 @@ fn main() {
 
     let drawfactor = 90.0;
 
+    let mut game = Game::new();
+    game.new_folk();
+
     window.set_lazy(true); // ??
 
     // iterate over window events
@@ -84,16 +132,17 @@ fn main() {
                         let y = calc_dis_pos(player.y as f64, drawfactor);
                         //throwable.set_active(x, y);
                         player.throw(x, y);
-                        player.apples.is_gone(1);
                     }
                     _ => {}
                 }
 
             }
             Input::Update(args) => {
-                // update time
-                // check collision
-                //time_controller.update_seconds(args.dt, input_controller.actions(), &mut state);
+
+                println!("{:?}", args.dt);
+                player.update(args.dt);
+                //folk.update();
+
             }
             Input::Render(_) => {
                 window.draw_2d(&e, |c, g| {
@@ -136,13 +185,17 @@ fn main() {
                         image(&apple, c.transform.trans(
                             t.x, t.y), g);
                     }
+
+                    for f in game.folks.iter() {
+                        let folk_square = rectangle::square(0.0,0.0, 40.0);
+                        rectangle(COLOR, folk_square, c.transform.trans(
+                            f.x, f.y), g);
+                    }
                 });
 
             }
             _ => {}
         }
-
-
 
     }
 }

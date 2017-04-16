@@ -25,6 +25,13 @@ impl Player {
     pub fn throw(&mut self, x_pos: f64, y_pos: f64) {
         if self.apples.left > 0 {
             self.throwable.push(Throwable::new(x_pos, y_pos));
+            self.apples.remove_one();
+        }
+    }
+
+    pub fn update(&mut self, delta_time: f64) {
+        for t in self.throwable.iter() {
+           // t.update();
         }
     }
 
