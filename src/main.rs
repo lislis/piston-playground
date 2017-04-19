@@ -1,5 +1,4 @@
 extern crate piston_window;
-extern crate piston;
 extern crate find_folder;
 
 mod apples;
@@ -7,6 +6,8 @@ mod throwable;
 mod player;
 
 use player::Player;
+
+//use piston_window::{Button, EventLoop, Input, Motion, OpenGL, PistonWindow, WindowSettings};
 use piston_window::*;
 
 struct Game {
@@ -65,8 +66,12 @@ fn main() {
         WindowSettings::new("draw an image", [400, 600])
         .exit_on_esc(true)
         .opengl(opengl)
+        .samples(8)
         .build()
         .unwrap();
+
+    window.set_ups(60);
+    window.set_max_fps(60);
 
     let mut player = Player::new();
 
@@ -107,11 +112,12 @@ fn main() {
     let mut game = Game::new();
     game.new_folk();
 
+    let mut count = 0.0;
+
     window.set_lazy(true); // ??
 
     // iterate over window events
     while let Some(e) = window.next() {
-
         match e {
             Input::Release(Button::Keyboard(key)) => {
                 match key {
@@ -135,16 +141,15 @@ fn main() {
                     }
                     _ => {}
                 }
-
             }
+
             Input::Update(args) => {
-
-                println!("{:?}", args.dt);
-                player.update(args.dt);
-                //folk.update();
-
+                count += args.dt;
+                println!("update {}", count);
             }
+
             Input::Render(_) => {
+                println!("render {}", count);
                 window.draw_2d(&e, |c, g| {
                     let font_transform = c.transform.trans(10.0, 100.0);
 
