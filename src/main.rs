@@ -105,8 +105,6 @@ fn main() {
     let factory = window.factory.clone();
     let mut glyphs = Glyphs::new(font, factory).unwrap();
 
-    let score = "Points: ";
-
     let drawfactor = 90.0;
 
     let mut game = Game::new();
@@ -156,7 +154,7 @@ fn main() {
                     clear([1.0; 4], g);
                     image(&house, c.transform.trans(50.0, 0.0), g);
                     text::Text::new_color(COLOR, 42).draw(
-                        score,
+                        &format!("Thrown {:?}", player.apples.gone),
                         &mut glyphs,
                         &c.draw_state,
                         font_transform,
